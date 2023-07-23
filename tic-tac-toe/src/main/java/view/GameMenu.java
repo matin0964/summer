@@ -39,47 +39,26 @@ public class GameMenu extends Application {
                         alert.setContentText("This cell is already occupied");
                         alert.showAndWait();
                     } else {
-                        Text text = new Text();
-                        text.setLayoutX(40);
-                        text.setLayoutY(60);
-                        text.setFont(javafx.scene.text.Font.font(50));
-                        if (turn) {
-                            text.setText("X");
-                            text.setFill(Color.RED);
-                            turn = false;
-                            board[m][n] = 1;
-                            cnt++;
-                        } else {
-                            text.setText("O");
-                            text.setFill(Color.GREEN);
-                            turn = true;
-                            board[m][n] = 2;
-                            cnt++;
-                        }
-                        pane.getChildren().add(text);
-                        int[][] ansLine = line();
+                        int[][] ansLine = GameMenu2.getLine(pane, m, n, board, turn, cnt);
+                        cnt++;
+                        turn = !turn;
                         if (ansLine != null) {
                             if (board[ansLine[0][0]][ansLine[0][1]] == 1) {
-//                                getLine(stage, root, grid, ansLine, 1);
                                 highLight(grid, ansLine, 1, stage);
                             } else if (board[ansLine[0][0]][ansLine[0][1]] == 2) {
-//                                getLine(stage, root, grid, ansLine, 2);
                                 highLight(grid, ansLine, 2, stage);
                             }
                         } else {
-                            if (cnt == 9) {
-                                Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                                alert.setTitle("Game Over");
-                                alert.setHeaderText("Game Over");
-                                alert.setContentText("Draw");
-                                alert.showAndWait();
-                                stage.close();
-                            }
+                            drawMessage(stage, cnt);
                         }
                     }
                 });
             }
         }
+        setGridPane(stage, root, grid);
+    }
+
+    static void setGridPane(Stage stage, Pane root, GridPane grid) {
         grid.setHgap(10);
         grid.setVgap(10);
         grid.setGridLinesVisible(true);
@@ -89,6 +68,17 @@ public class GameMenu extends Application {
         Scene scene = new Scene(root);
         stage.setScene(scene);
         stage.show();
+    }
+
+    static void drawMessage(Stage stage, int cnt) {
+        if (cnt == 9) {
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("Game Over");
+            alert.setHeaderText("Game Over");
+            alert.setContentText("Draw");
+            alert.showAndWait();
+            stage.close();
+        }
     }
 
     private static void highLight(GridPane grid, int[][] ansLine, int number, Stage stage) {
@@ -111,7 +101,7 @@ public class GameMenu extends Application {
         showWinner(number, stage);
     }
 
-    private static void showWinner(int number, Stage stage) {
+    static void showWinner(int number, Stage stage) {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle("Game Over");
         alert.setHeaderText("Game Over");
@@ -125,38 +115,5 @@ public class GameMenu extends Application {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-    }
-    private int[][] line() {
-        for (int i = 0; i < 3; i++) {
-            if (board[i][0] == board[i][1] && board[i][1] == board[i][2]) {
-                int[] ansS = {i, 0};
-                int[] ansM = {i, 1};
-                int[] ansE = {i, 2};
-                int[][] ans = {ansS, ansM, ansE};
-                return ans;
-            }
-            if (board[0][i] == board[1][i] && board[1][i] == board[2][i]) {
-                int[] ansS = {0, i};
-                int[] ansM = {1, i};
-                int[] ansE = {2, i};
-                int[][] ans = {ansS, ansM, ansE};
-                return ans;
-            }
-        }
-        if (board[0][0] == board[1][1] && board[1][1] == board[2][2]) {
-            int[] ansS = {0, 0};
-            int[] ansM = {1, 1};
-            int[] ansE = {2, 2};
-            int[][] ans = {ansS, ansM, ansE};
-            return ans;
-        }
-        if (board[0][2] == board[1][1] && board[1][1] == board[2][0]) {
-            int[] ansS = {0, 2};
-            int[] ansM = {1, 1};
-            int[] ansE = {2, 0};
-            int[][] ans = {ansS, ansM, ansE};
-            return ans;
-        }
-        return null;
     }
 }
